@@ -38,6 +38,7 @@ class Pokemon:
         self.health = health
         self.bars = 25
         self.status = 0
+        self.turnstate = 1
 
     def damage(self, Pokemon2):
         for i,x in enumerate(self.moves):
@@ -116,48 +117,53 @@ class Pokemon:
         print("LVL/", 3*(1+(Pokemon2.attack+Pokemon2.defense)/2))
 
         time.sleep(2)
-
-        
         
         print(f"{self.name}\t\tHLTH\t{self.health}")
         print(f"{Pokemon2.name}\t\tHLTH\t{Pokemon2.health}")
 
-        print (f"I choose you, {self.name}!")
-
-
         # Continue while pokemon have health
         while (self.bars > 0 ) and (Pokemon2.bars > 0):
-            state = input('What would you like to do?: ')
-            if (state == 's'):
-                self.status = 1
-                break
+            # Self's turn
+            if (self.turnstate == 1):
+                state = input('What would you like to do?: ')
+                if (state == 's'):
+                    self.status = 1
+                    break
+                
+                self.damage(Pokemon2)
+                
+                time.sleep(1)
 
-            self.damage(Pokemon2)
-            
-            time.sleep(1)
+                print(f"\n{self.name}\t\tHLTH\t{self.health}")
+                print(f"{Pokemon2.name}\t\tHLTH\t{Pokemon2.health}")
 
-            print(f"\n{self.name}\t\tHLTH\t{self.health}")
-            print(f"{Pokemon2.name}\t\tHLTH\t{Pokemon2.health}")
-
-            # Check to see if Pokemon2 has fainted
-            if Pokemon2.bars <= 0:
-                delay_print("\n..." + Pokemon2.name + " has fainted.")
-                break
-
+                # Check to see if Pokemon2 has fainted
+                if Pokemon2.bars <= 0:
+                    delay_print("\n..." + Pokemon2.name + " has fainted.\n")
+                    break
 
             # Pokemon 2s turn
-            print(f"It's {Pokemon2.name}'s turn.")
-            Pokemon2.damage(self)
-            
-            time.sleep(1)
+            if (Pokemon2.turnstate == 1):
+                state2 = input('What would you like to do?: ')
+                if (state2 == 's'):
+                    Pokemon2.status = 1
+                    break
 
-            print(f"\n{self.name}\t\tHLTH\t{self.health}")
-            print(f"{Pokemon2.name}\t\tHLTH\t{Pokemon2.health}")
+                print(f"It's {Pokemon2.name}'s turn.")
+                Pokemon2.damage(self)
+                
+                time.sleep(1)
 
-            # Check to see if self has fainted
-            if self.bars <= 0:
-                delay_print("\n..." + self.name + " has fainted.")
-                break
+                print(f"\n{self.name}\t\tHLTH\t{self.health}")
+                print(f"{Pokemon2.name}\t\tHLTH\t{Pokemon2.health}")
+
+                # Check to see if self has fainted
+                if self.bars <= 0:
+                    delay_print("\n..." + self.name + " has fainted.\n")
+                    break
+
+            self.turnstate = 1
+            Pokemon2.turnstate = 1
 
 # Pulling all necessary data from excel based on user input
 def getData():
@@ -191,42 +197,45 @@ def switch(arr, index):
     return arr
 
 if __name__ == "__main__":
-    # team1 = []
-    # team2 = []
-    # for i in range(2):
-    #     team1.append(getData())
-    # for j in range(2):
-    #     team2.append(getData())
-        
-    # for i, pokemon in enumerate(team1):
-    #     print(f"{i+1} ", pokemon.name) 
-    # for j, pokemon in enumerate(team2):
-    #     print(f"{j+1} ", pokemon.name)
-    
-    # while((len(team1) > 0 ) and (len(team2) > 0)):
-    #     team1[0].fight(team2[0])
-    #     if (team1[0].status == 1):
-    #         member = int(input('Who would you like to switch to?: ')) - 1
-    #         switch(team1,member)
-    #         team1[0].status = 0
-    #     elif (team2[0].status == 1):
-    #         member = int(input('Who would you like to switch to?: ')) - 1
-    #         switch(team2,member)
-    #         team2[0].status = 0
-    #     else:
-    #         if (team1[0].bars <= 0):
-    #             for i, pokemon in enumerate(team1):
-    #                 print(f"{i+1} ", pokemon.name) 
-    #             member = int(input('\nWho would you like to switch to?: ')) - 1
-    #             switch(team1,member)
-    #             team1.remove(team1[member])
-    #         elif (team2[0].bars <= 0):
-    #             for i, pokemon in enumerate(team2):
-    #                 print(f"{i+1} ", pokemon.name) 
-    #             member = int(input('\nWho would you like to switch to?: ')) - 1
-    #             switch(team2,member)
-    #             team2.remove(team2[member])
-    pokemon1 = getData()
-    pokemon2 = getData()
+    team1 = []
+    team2 = []
 
-    pokemon1.fight(pokemon2)
+    # Creating teams
+    for i in range(2):
+        team1.append(getData())
+    for j in range(2):
+        team2.append(getData())
+        
+    # Printing out teams
+    print("\nTeam 1")
+    for i, pokemon in enumerate(team1):
+        print(f"{i+1} ", pokemon.name) 
+    print("\nTeam 2")
+    for j, pokemon in enumerate(team2):
+        print(f"{j+1} ", pokemon.name)
+    
+    while((len(team1) > 0 ) and (len(team2) > 0)):
+        team1[0].fight(team2[0])
+        if (team1[0].status == 1):
+            member = int(input('Who would you like to switch to?: ')) - 1
+            switch(team1,member)
+            team1[0].status = 0
+            team1[0].turnstate = 0
+        elif (team2[0].status == 1):
+            member = int(input('Who would you like to switch to?: ')) - 1
+            switch(team2,member)
+            team2[0].status = 0
+            team2[0].turnstate = 0
+        else:
+            if (team1[0].bars <= 0):
+                for i, pokemon in enumerate(team1):
+                    print(f"{i+1} ", pokemon.name) 
+                member = int(input('\nWho would you like to switch to?: ')) - 1
+                switch(team1,member)
+                team1.remove(team1[member])
+            elif (team2[0].bars <= 0):
+                for i, pokemon in enumerate(team2):
+                    print(f"{i+1} ", pokemon.name) 
+                member = int(input('\nWho would you like to switch to?: ')) - 1
+                switch(team2,member)
+                team2.remove(team2[member])

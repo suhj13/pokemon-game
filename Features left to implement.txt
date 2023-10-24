@@ -1,8 +1,10 @@
-1. Consider type of the move being used against the type of the Pokemon instead of pokemon type vs type. (Done) (Implemented in pokemon.py)
+1. Consider type of the move being used against the type of the Pokemon instead of pokemon type vs type. (Done)
 
-2. Consideration of Pokemon with double types. (almost done - requires further testing) (only implemented in test.py so far)
+2. Consideration of Pokemon with double types. (Done)
 
 3. Debug battle functionality.
+    - swap feature (Done for self) (Still need to implement for Pokemon2) 
+    - team health feature (In progress)
 
 4. Consideration of Pokemon speed.
 
