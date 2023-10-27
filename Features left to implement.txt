@@ -2,10 +2,10 @@
 
 2. Consideration of Pokemon with double types. (Done)
 
-3. Debug battle functionality.
-    - swap feature (Done for self) (Still need to implement for Pokemon2) 
-    - team health feature (In progress)
+3. Debug battle functionality. (Done but may need to code more)
+    - swap feature (Done) 
+    - team health feature (Done)
 
-4. Consideration of Pokemon speed.
+4. Consideration of Pokemon speed. (Almost done)
 
 5. The NPC.
