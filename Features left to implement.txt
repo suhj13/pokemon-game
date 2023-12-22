@@ -6,6 +6,6 @@
     - swap feature (Done) 
     - team health feature (Done)
 
-4. Consideration of Pokemon speed. (Almost done)
+4. Consideration of Pokemon speed. (Done)
 
 5. The NPC.

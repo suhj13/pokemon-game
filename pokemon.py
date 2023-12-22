@@ -71,14 +71,19 @@ class Pokemon:
         Pokemon2.defense /= multiplier
         move[2] *= multiplier
          
-        #Pokemon 2 is strong against self
+        #Pokemon 2's attack is strong against self
         if multiplier == 0.5:
-            string_attack = "It's not very effective...\n"
+            string_attack = "It's not very effective...\n"       
+         
+        #Pokemon 2's attack does not affect self
+        if multiplier == 0:
+            string_attack = "It does not affect the opponent.\n"       
         
+        # Pokemon 2's attack is neutral against self
         elif multiplier == 1:
             string_attack = "The opponent is hurt.\n"
         
-        # Pokemon 2 is weak against self
+        # Pokemon 2's attack is weak against self
         elif multiplier == 2:
             string_attack = "It's super effective!\n"
 
@@ -119,6 +124,8 @@ class Pokemon:
         
         print(f"\n{self.name}\t\tHLTH\t{self.health}")
         print(f"{Pokemon2.name}\t\tHLTH\t{Pokemon2.health}\n")
+            
+        global move1, move2, state1, state2
 
         # Continue while pokemon have health
         while (self.bars > 0 ) and (Pokemon2.bars > 0):
@@ -129,24 +136,22 @@ class Pokemon:
             state1 = input('What would you like to do Team1?: ')
             if (state1 == 's'):
                 self.status = 1
-                
-            else:
-                for i,x in enumerate(self.moves):
-                    print(f"{i+1}.", x[0], x[1], x[2])
-                index1 = int(input('Pick a move: '))
-                global move1 
-                move1 = self.moves[index1-1]
-
+                break            
+    
+            for i,x in enumerate(self.moves):
+                print(f"{i+1}.", x[0], x[1], x[2])
+            index1 = int(input('Pick a move: '))
+            move1 = self.moves[index1-1]
+            
             state2 = input('What would you like to do Team2?: ')
             if (state2 == 's'):
                 Pokemon2.status = 1
-                
-            else:
-                for i,x in enumerate(Pokemon2.moves):
-                    print(f"{i+1}.", x[0], x[1], x[2])
-                index2 = int(input('Pick a move: '))
-                global move2
-                move2 = Pokemon2.moves[index2-1]
+                break
+
+            for i,x in enumerate(Pokemon2.moves):
+                print(f"{i+1}.", x[0], x[1], x[2])
+            index2 = int(input('Pick a move: '))
+            move2 = Pokemon2.moves[index2-1]
 
             # Self's turn if self is faster than Pokemon2
             if (self.turnstate == 1 and state1 != 's'):
@@ -211,6 +216,8 @@ def getData():
         if name == df2.values[i][0]:
             break
         i1 += 1
+    
+
     type1 = df2.values[i1][1]
     type2 = df2.values[i1][2]
     moveset = []
@@ -242,10 +249,18 @@ if __name__ == "__main__":
 
     # Creating teams
     for i in range(2):
-        team1.append(getData())
+        try:
+            team1.append(getData())
+        except IndexError:
+            print('Name is not in database. Please try again.')
+    
     for j in range(2):
-        team2.append(getData())
-        
+        try:
+            team2.append(getData())
+        except IndexError:
+            print('Name is not in database. Please try again.')
+            
+
     # Printing out teams
     print("\nTeam 1")
     for i, pokemon in enumerate(team1):
@@ -260,44 +275,58 @@ if __name__ == "__main__":
         if ((team1[0].status == 1) and (team2[0].status != 1)):
             for i, pokemon in enumerate(team1):
                 print(f"{i+1} ", pokemon.name)
-            member = int(input('Who would you like to switch to?: ')) - 1
-            switch(team1,member)
-            team2[0].damage(team1[0], move2)
-            team1[0].status = 0
+            member = int(input('Who would you like to switch to Team1?: ')) - 1
+
+            state2 = input('What would you like to do Team2?: ')
+
+            # If statements only apply in this case because of the break sequence in the fight() method
+            if (state2 != 's'):
+                for i,x in enumerate(team2[0].moves):
+                    print(f"{i+1}.", x[0], x[1], x[2])
+                index2 = int(input('Pick a move: '))
+                move2 = team2[0].moves[index2-1]
+
+                print(f'Team1 has switched {team1[0].name} with {team1[member].name}!')
+                switch(team1,member)
+                team2[0].damage(team1[0], move2)
+                team1[0].status = 0
+            else:
+                team2[0].status = 1
             
         elif ((team1[0].status != 1) and (team2[0].status == 1)):
             for i, pokemon in enumerate(team2):
                 print(f"{i+1} ", pokemon.name)
-            member = int(input('Who would you like to switch to?: ')) - 1
+            member = int(input('Who would you like to switch to Team2?: ')) - 1
+
+            print(f'Team2 has switched {team2[0].name} with {team2[member].name}!')
             switch(team2,member)
             team1[0].damage(team2[0], move1)
             team2[0].status = 0
             
-        elif ((team1[0].status == 1) and (team2[0].status == 1)):
-            for i, pokemon in enumerate(team1):
-                print(f"{i+1} ", pokemon.name)
-            member = int(input('Who would you like to switch to?: ')) - 1
+            
+        if ((team1[0].status == 1) and (team2[0].status == 1)):
             switch(team1,member)
             for i, pokemon in enumerate(team2):
                 print(f"{i+1} ", pokemon.name)
-            member = int(input('Who would you like to switch to?: ')) - 1
+            member = int(input('Who would you like to switch to Team2?: ')) - 1
             switch(team2,member)
             team1[0].status = 0
             team2[0].status = 0
 
-        else:
-            if (team1[0].bars <= 0):
-                print('\n')
-                for i, pokemon in enumerate(team1):
-                    print(f"{i+1} ", pokemon.name, pokemon.health) 
-                member = int(input('\nWho would you like to switch to?: ')) - 1
-                switch(team1,member)
-                team1.remove(team1[member])
+        
+        if (team1[0].bars <= 0):
+            print('\n')
+            for i, pokemon in enumerate(team1):
+                print(f"{i+1} ", pokemon.name, pokemon.health) 
+            member = int(input('\nWho would you like to switch to Team1?: ')) - 1
+            switch(team1,member)
+            team1.remove(team1[member])
 
-            elif (team2[0].bars <= 0):
-                print('\n')
-                for i, pokemon in enumerate(team2):
-                    print(f"{i+1} ", pokemon.name, pokemon.health) 
-                member = int(input('\nWho would you like to switch to?: ')) - 1
-                switch(team2,member)
-                team2.remove(team2[member])
+        elif (team2[0].bars <= 0):
+            print('\n')
+            for i, pokemon in enumerate(team2):
+                print(f"{i+1} ", pokemon.name, pokemon.health) 
+            member = int(input('\nWho would you like to switch to Team2?: ')) - 1
+            switch(team2,member)
+            team2.remove(team2[member])
+
