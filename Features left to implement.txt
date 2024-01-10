@@ -8,4 +8,16 @@
 
 4. Consideration of Pokemon speed. (Done)
 
-5. The NPC.
+5. The NPC. 
+    Notes (What I want the NPC to do)
+    - Make a team that is super effective against each member of my team.
+        - Iterate through my team and find a pokemon in the database that is super effective against each member.
+        - Add to list once found in the database.
+
+    - Makes a little bit of decision making based on the situation it is in.
+        - If the NPC's pokemon is strong defensively against my pokemon, attack it.
+        - If not, then switch out. 
+
+6. Database development
+    - Find a way to add stats to each Pokemon by scraping data from serebii.net.
+    - Could do the above with moves as well.
